@@ -1,0 +1,30 @@
+apply plugin: 'groovy'
+apply plugin: 'maven'
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation gradleApi() //gradle sdk
+    implementation localGroovy() //groovy sdk
+    implementation 'com.android.tools.build:gradle:3.5.0'
+    implementation 'org.javassist:javassist:3.20.0-GA'
+}
+
+sourceCompatibility = "8"
+targetCompatibility = "8"
+
+repositories {
+    mavenCentral()
+}
+
+//group = 'com.okrouter.plugin'
+//version = '1.0.0'
+
+//发布
+uploadArchives {
+    repositories.mavenDeployer {
+        repository(url: uri('../repo')) //仓库的路径，此处是项目根目录下的 repo 的文件夹
+        pom.groupId = 'com.okrouter.plugin'  //groupId ，自行定义，一般是包名
+        pom.artifactId = 'register' //artifactId ，自行定义
+        pom.version = '1.0.0' //version 版本号
+    }
+}

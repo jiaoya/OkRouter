@@ -1,0 +1,12 @@
+apply plugin: 'java-library'
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(path: ':okrouter_annotation')
+    implementation 'com.google.auto.service:auto-service:1.0-rc4'
+    implementation 'com.squareup:javapoet:1.11.1'
+    implementation rootProject.ext.appcompatv7
+}
+
+sourceCompatibility = "8"
+targetCompatibility = "8"
