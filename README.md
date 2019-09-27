@@ -79,18 +79,18 @@ Android路由框架，支持模块间的路由、通信、解耦、支持多进�
 
 3. 添加页面跳转注解
 ```
-    // 在支持路由的页面上添加注解(必选)
-    // 这里的路径必须以‘/’开始，/xx/xx
-    @Route(adress = "/test/activity")
-    public class MainActivity extend Activity {
-        ...
-    }
+// 在支持路由的页面上添加注解(必选)
+// 这里的路径必须以‘/’开始，/xx/xx
+@Route(adress = "/test/activity")
+public class MainActivity extend Activity {
+    ...
+}
   
-    // 支持标准URL,也可以添加参数：okrouter://test/Main2Activity?a=1
-    @Route(adress = "okrouter://test/Main2Activity")
-    public class Main2Activity extend Activity {
-        ...
-    } 
+// 支持标准URL,也可以添加参数：okrouter://test/Main2Activity?a=1
+@Route(adress = "okrouter://test/Main2Activity")
+public class Main2Activity extend Activity {
+    ...
+} 
 ```
 
 4. 声明拦截器
@@ -129,68 +129,68 @@ OkRouter.getInstance().build("/WebViewTestActivity").putString("1","2").navigati
 ```
 6. 转场动画
 ```
-	// 常规方式
-	ARouter.getInstance()
-	    .build("/test/MainActivity")
-	    .withTransition(R.anim.slide_in_bottom, R.anim.slide_out_bottom)
-	    .navigation(this);
+// 常规方式
+ARouter.getInstance()
+	.build("/test/MainActivity")
+	.withTransition(R.anim.slide_in_bottom, R.anim.slide_out_bottom)
+	.navigation(this);
 	
-	// 转场动画(API16+)
-	ActivityOptionsCompat compat = ActivityOptionsCompat.
-	    makeScaleUpAnimation(v, v.getWidth() / 2, v.getHeight() / 2, 0, 0);
+// 转场动画(API16+)
+ActivityOptionsCompat compat = ActivityOptionsCompat.
+makeScaleUpAnimation(v, v.getWidth() / 2, v.getHeight() / 2, 0, 0);
 	
-	// ps. makeSceneTransitionAnimation 使用共享元素的时候，需要在navigation方法中传入当前Activity
-	ARouter.getInstance()
-	    .build("/test/MainActivity")
-	    .withOptionsCompat(compat)
-	    .navigation();
+// ps. makeSceneTransitionAnimation 使用共享元素的时候，需要在navigation方法中传入当前Activity
+ARouter.getInstance()
+	.build("/test/MainActivity")
+	.withOptionsCompat(compat)
+	.navigation();
 
 ```
 7. 进程间通讯
 ```
-  	1.创建服务
-  	// 必须创建Service，必须继承ProviderService
-  	@Provider(processName = "com.albert.okrouter.demo")
-  	public class AppServiceTest extends ProviderService {
-  		...
-  	}
-  	// processName进程名与AndroidManifest.xml android:process配置对应
-  	<service
-   			android:name=".AppServiceTest"
-    		android:process="com.albert.okrouter.demo" />
+1.创建服务
+// 必须创建Service，必须继承ProviderService
+@Provider(processName = "com.albert.okrouter.demo")
+public class AppServiceTest extends ProviderService {
+  	...
+}
+// processName进程名与AndroidManifest.xml android:process配置对应
+<service
+   		android:name=".AppServiceTest"
+    	android:process="com.albert.okrouter.demo" />
 
-	2.创建action接口
-	// 必须继承IBaseAction，用来进程间传递数据，也可以不依赖模块名进行数据传递
-	// processName：进程名，adress：action的地址，如果不填写processName，默认主进程
-	@Action(processName = "com.albert.okrouter.demo", adress = "AppTestAction")
-	public class AppTestAction implements IBaseAction {
+2.创建action接口
+// 必须继承IBaseAction，用来进程间传递数据，也可以不依赖模块名进行数据传递
+// processName：进程名，adress：action的地址，如果不填写processName，默认主进程
+@Action(processName = "com.albert.okrouter.demo", adress = "AppTestAction")
+public class AppTestAction implements IBaseAction {
 	
-		@Override
-		public ActionResult invoke(Context context, Bundle bundle) {
-			// Bundle里携带传过来的参数
-			// ActionResult 接口返回的结果
-	    	ActionResult result = new ActionResult();
-	    	result.setStringData("jiaoya+AppTestAction");
-	    	return result;
-   	 	}
-	}
+	@Override
+	public ActionResult invoke(Context context, Bundle bundle) {
+		// Bundle里携带传过来的参数
+		// ActionResult 接口返回的结果
+	    ActionResult result = new ActionResult();
+	    result.setStringData("jiaoya+AppTestAction");
+	    return result;
+   	}
+}
 
-	3.使用
-	OkRouter.getInstance()
-	    	.bind("com.albert.okrouter.demo","AppTestAction")
-	    	.callbackOn(RouterScheduler.MAIN)
-	    	.getAction(new ActionCallback() {
-	        	@Override
-	        	public void result(ActionResult result) {
-	            	Log.e(TAG, result.getStringData());
-	            	tvShow.setText("结果：" + 		result.getStringData());
-	        	}
+3.使用
+OkRouter.getInstance()
+	    .bind("com.albert.okrouter.demo","AppTestAction")
+	    .callbackOn(RouterScheduler.MAIN)
+	    .getAction(new ActionCallback() {
+	        @Override
+	        public void result(ActionResult result) {
+	            Log.e(TAG, result.getStringData());
+	            tvShow.setText("结果：" + 		result.getStringData());
+	        }
 	
-				@Override
-	        	public void error(Exception e) {
-	            	Log.e(TAG, e.toString() + "");
-	        	}
-	    	});
+			@Override
+	        public void error(Exception e) {
+	            Log.e(TAG, e.toString() + "");
+	        }
+	    });
 
      // putxxx 出入参数
      .putString("test", "我是测试2")
@@ -206,10 +206,11 @@ OkRouter.getInstance().build("/WebViewTestActivity").putString("1","2").navigati
 ```
 
 8. 其他
-  1. **谢谢使用和支持**
-  2. **如有问题请github上反馈给我**
-  3. **第一版功能不是很全，如有更好的想法，请反馈给我**
-  4. **[简书地址](https://www.jianshu.com/u/24fcedd34db7)**
-  5. **参考rxjava/arouter**
+	1. **谢谢使用和支持**
+	2. **如有问题请github上反馈给我**
+	3. **第一版功能不是很全，如有更好的想法，请反馈给我**
+	4. **[简书地址](https://www.jianshu.com/u/24fcedd34db7)**
+	5. **参考rxjava/arouter**
+
 
 
