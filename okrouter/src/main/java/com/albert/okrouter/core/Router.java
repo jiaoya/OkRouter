@@ -550,6 +550,10 @@ class Router {
      */
     private void connectProcess(final ActionEntity actionEntity, final ActionCallback callback) {
 
+        if (!mServices.containsKey(actionEntity.getProcessName())) {
+            callback.error(new OkRouterException("Could not find processName,please check the processName of the settings"));
+            return;
+        }
         Intent intent = new Intent(mApplicationContext, mServices.get(actionEntity.getProcessName()));
         ServiceConnection connection = new ServiceConnection() {
             @Override

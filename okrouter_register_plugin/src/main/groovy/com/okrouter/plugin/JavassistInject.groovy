@@ -9,49 +9,50 @@ import java.util.jar.JarFile
 
 class JavassistInject {
 
-    private static ArrayList classPathList
-    private static ClassPool pool
-    private static HashSet<String> scanAdressClassSet
+    private ClassPool mPool;
+    private Project mProject;
+    private ArrayList mClassPathList;
+    private HashSet<String> mScanAdressClassSet;
+
+    public JavassistInject(ClassPool pool, Project project) {
+        mPool = pool;
+        mProject = project;
+        mClassPathList = new ArrayList();
+        mScanAdressClassSet = new HashSet<>();
+    }
+
 
     /**
      * 扫描过滤路径
+     *
      * @param path
      * @param packageName
-     * @param project
      */
-    public static void scanFilterPath(String path, String packageName, Project project) {
-
-        // 初始化
-        if (classPathList == null && scanAdressClassSet == null) {
-            classPathList = new ArrayList<String>()
-            scanAdressClassSet = new HashSet<>()
-            pool = ClassPool.getDefault()
-        }
-
+    public void scanFilterPath(String path, String packageName) {
         // 开始扫描
         File dir = new File(path)
         // 如果path表示的是一个目录则返回true
         if (!dir.isDirectory()) {
-            scanFilterJar(path, packageName, project)
+            scanFilterJar(path, packageName)
         } else {
-            scanFilterDir(dir, path, packageName, project)
+            scanFilterDir(dir, path, packageName)
         }
     }
 
     /**
      * 扫描jar包
+     *
      * @param path
      * @param packageName == com.ablert.jrouter.cache
-     * @param project
      */
-    public static void scanFilterJar(String path, String packageName, Project project) {
+    private void scanFilterJar(String path, String packageName) {
         try {
             JarFile jarFile = new JarFile(path);
-            Enumeration<JarEntry> entrys = jarFile.entries()
+            Enumeration<JarEntry> entrys = jarFile.entries();
             while (entrys.hasMoreElements()) {
-                JarEntry jarEntry = entrys.nextElement()
+                JarEntry jarEntry = entrys.nextElement();
                 // LogUtil.error("jarEntry.name:--" + jarEntry)
-                String className = jarEntry.getName().replaceAll('/', '.').replace('\\', '.')
+                String className = jarEntry.getName().replaceAll('/', '.').replace('\\', '.');
                 if (!className.startsWith("com.android")
                         && !className.startsWith("android.")
                         && !className.startsWith("androidx.")
@@ -67,12 +68,12 @@ class JavassistInject {
                         className = className.substring(0, className.length() - 6)
                         if (className.contains(packageName) || className.equals(PluginSetting.IMPORT_ROUTER_CLASS_UniqueKeyTreeMap)) {
                             // 路由
-                            pool.appendClassPath(path)
+                            mPool.appendClassPath(path)
                             // 记录扫描到的路径
-                            classPathList.add(path)
+                            mClassPathList.add(path)
                             if (!className.equals(PluginSetting.IMPORT_ROUTER_CLASS_UniqueKeyTreeMap)) {
                                 // 记录扫码的类
-                                scanAdressClassSet.add(className)
+                                mScanAdressClassSet.add(className)
                             }
                             LogUtil.error("injectJar:--" + className)
                         }
@@ -84,77 +85,77 @@ class JavassistInject {
         }
     }
 
+
     /**
      * 扫描文件夹路径
+     *
      * @param dir
      * @param path
      * @param packageName == com.ablert.jrouter.cache
-     * @param project
      */
-    public static void scanFilterDir(File dir, String path, String packageName, Project project) {
+    private void scanFilterDir(File dir, String path, String packageName) {
         try {
-            dir.eachFileRecurse { File file ->
-                String filePath = file.absolutePath
-                if (filePath.endsWith(".class")
-                        && !filePath.contains('R$')
-                        && !filePath.contains('$')//代理类
-                        && !filePath.contains('R.class')
-                        && !filePath.contains("BuildConfig.class")) {
+            dir.eachFileRecurse {
+                File file ->
+                    String filePath = file.absolutePath;
+                    if (filePath.endsWith(".class")
+                            && !filePath.contains('R$')
+                            && !filePath.contains('$')//代理类
+                            && !filePath.contains('R.class')
+                            && !filePath.contains("BuildConfig.class")) {
 
-                    // 扫描的路径是：/app/build/intermediates/javac,这种形式要转成 app.build.intermediates.javac
-                    String classFile = filePath.replace('\\', '.').replace('/', '.')
-                    // LogUtil.error("injectDir:--" + classFile + "\n")
-                    // 如果是包名packageName
-                    if (classFile.contains(packageName) || classFile.contains(PluginSetting.IMPORT_ROUTER_CLASS_UniqueKeyTreeMap)) {
+                        // 扫描的路径是：/app/build/intermediates/javac,这种形式要转成 app.build.intermediates.javac
+                        String classFile = filePath.replace('\\', '.').replace('/', '.')
+                        // LogUtil.error("injectDir:--" + classFile + "\n")
+                        // 如果是包名packageName
+                        if (classFile.contains(packageName) || classFile.contains(PluginSetting.IMPORT_ROUTER_CLASS_UniqueKeyTreeMap)) {
 
-                        classPathList.add(path)
-                        pool.appendClassPath(path)
+                            mPool.appendClassPath(path)
+                            mClassPathList.add(path)
 
-                        int index = classFile.indexOf(packageName)
-                        // .class = 6
-                        int end = classFile.length() - 6
-                        String className = classFile.substring(index, end)
-                        if (!className.equals(PluginSetting.IMPORT_ROUTER_CLASS_UniqueKeyTreeMap)) {
-                            // 记录扫码的类
-                            scanAdressClassSet.add(className)
+                            int index = classFile.indexOf(packageName)
+                            // .class = 6
+                            int end = classFile.length() - 6
+                            String className = classFile.substring(index, end)
+                            if (!className.equals(PluginSetting.IMPORT_ROUTER_CLASS_UniqueKeyTreeMap)) {
+                                // 记录扫码的类
+                                mScanAdressClassSet.add(className)
+                            }
+                            // LogUtil.error("injectDir:--" + className)
                         }
-                        // LogUtil.error("injectDir:--" + className)
                     }
-                }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-
     /**
      * 注入并创建文件，不支持泛型
      */
-    public static void injectCreate(File targetDir) {
-        LogUtil.error("injectCreate:--" + scanAdressClassSet.size())
-        if (scanAdressClassSet == null) {
+    public void injectCreate(File targetDir) {
+        LogUtil.error("injectCreate:--" + mScanAdressClassSet.size())
+        if (mScanAdressClassSet == null || mScanAdressClassSet.size() == 0) {
             return
         }
         try {
             // 先转换获取真实类
             HashSet<CtClass> adressClassSet = new HashSet()
-            for (String className : scanAdressClassSet) {
-                CtClass ctClass = pool.getCtClass(className)
-                adressClassSet.add(ctClass)
+            for (String className : mScanAdressClassSet) {
+                adressClassSet.add(mPool.getCtClass(className))
             }
             if (adressClassSet.size() == 0) {
                 return
             }
 
             // 导入包
-            pool.importPackage("java.util.HashMap")
+            mPool.importPackage("java.util.HashMap")
             // 导入包com.ablert.jrouter.cache.*
-            pool.importPackage(PluginSetting.MOLDE_PAHTS_CACHE_PACKAGE_NAME + ".*")
-            pool.importPackage(PluginSetting.IMPORT_ROUTER_CLASS_UniqueKeyTreeMap)
+            mPool.importPackage(PluginSetting.MOLDE_PAHTS_CACHE_PACKAGE_NAME + ".*")
+            mPool.importPackage(PluginSetting.IMPORT_ROUTER_CLASS_UniqueKeyTreeMap)
 
             // 创建新类:com.ablert.jrouter.cache.RouterInfo
-            CtClass routerClass = pool.makeClass(PluginSetting.ROUTER_CALSS_PATHS);
+            CtClass routerClass = mPool.makeClass(PluginSetting.ROUTER_CALSS_PATHS);
 
             // 创建变量，Javassist不支持要创建或注入的类中存在泛型参数
             StringBuilder variableBuilder = new StringBuilder("private static final HashMap " + PluginSetting.ALL_CLASS_PATHS + " = new HashMap();")
@@ -212,21 +213,21 @@ class JavassistInject {
                     //e.printStackTrace()
                     LogUtil.error(e.getMessage());
                 }
-
+                // Interceptor
                 try {
-                    String a = tCtclass.name + "." + tCtclass.getDeclaredMethod(PluginSetting.MODEL_GET_INTERCEPTORS_METHOD_NAME).name + "()"
+                    String b = tCtclass.name + "." + tCtclass.getDeclaredMethod(PluginSetting.MODEL_GET_INTERCEPTORS_METHOD_NAME).name + "()"
                     interceptorsMethodBuilder.append(PluginSetting.ALL_INTERCEPTORS + ".putAll(")
-                    interceptorsMethodBuilder.append(a)
+                    interceptorsMethodBuilder.append(b)
                     interceptorsMethodBuilder.append(");")
                 } catch (NotFoundException e) {
                     //e.printStackTrace()
                     LogUtil.error(e.getMessage());
                 }
-
+                // InterceptorPoint
                 try {
-                    String a = tCtclass.name + "." + tCtclass.getDeclaredMethod(PluginSetting.MODEL_GET_INTERCEPTORS_POINT_METHOD_NAME).name + "()"
+                    String c = tCtclass.name + "." + tCtclass.getDeclaredMethod(PluginSetting.MODEL_GET_INTERCEPTORS_POINT_METHOD_NAME).name + "()"
                     interceptorsPointMethodBuilder.append(PluginSetting.ALL_INTERCEPTORS_POINT + ".putAll(")
-                    interceptorsPointMethodBuilder.append(a)
+                    interceptorsPointMethodBuilder.append(c)
                     interceptorsPointMethodBuilder.append(");")
                 } catch (NotFoundException e) {
                     //e.printStackTrace()
@@ -235,10 +236,10 @@ class JavassistInject {
 
                 // provides
                 try {
-                    String a = tCtclass.name + "." + tCtclass.getDeclaredMethod(PluginSetting.MODEL_GET_PROVIDES).name + "()"
-                    LogUtil.error("injectDir:--" + a)
+                    String d = tCtclass.name + "." + tCtclass.getDeclaredMethod(PluginSetting.MODEL_GET_PROVIDES).name + "()"
+                    LogUtil.error("provides--" + d);
                     provideMethodBuilder.append(PluginSetting.ALL_PROVIDERS + ".putAll(")
-                    provideMethodBuilder.append(a)
+                    provideMethodBuilder.append(d)
                     provideMethodBuilder.append(");")
                 } catch (NotFoundException e) {
                     //e.printStackTrace()
@@ -247,14 +248,15 @@ class JavassistInject {
 
                 // action
                 try {
-                    String a = tCtclass.name + "." + tCtclass.getDeclaredMethod(PluginSetting.MODEL_GET_ACTIONS).name + "()"
+                    String e = tCtclass.name + "." + tCtclass.getDeclaredMethod(PluginSetting.MODEL_GET_ACTIONS).name + "()"
                     actionMethodBuilder.append(PluginSetting.ALL_ACTIONS + ".putAll(")
-                    actionMethodBuilder.append(a)
+                    actionMethodBuilder.append(e)
                     actionMethodBuilder.append(");")
                 } catch (NotFoundException e) {
                     //e.printStackTrace()
                     LogUtil.error(e.getMessage());
                 }
+                tCtclass.detach();
             }
 
             // 添加方法
@@ -288,7 +290,6 @@ class JavassistInject {
             CtMethod actionMethod = CtNewMethod.make(actionMethodBuilder.toString(), routerClass)
             routerClass.addMethod(actionMethod)
 
-
             // 生成文件
             routerClass.writeFile(PluginSetting.CREATE_FILE_ROUTER_CALSS_PATHS)
             File file = new File(PluginSetting.CREATE_FILE_ROUTER_CALSS_PATHS)
@@ -303,22 +304,23 @@ class JavassistInject {
         removeClassPath()
     }
 
+
     /**
      * 移除pool里的数据
      */
-    private static void removeClassPath() {
-        if (classPathList != null) {
-            for (String a : classPathList) {
+    private void removeClassPath() {
+        if (mClassPathList != null) {
+            for (String a : mClassPathList) {
                 try {
                     ClassPath classPath = ClassPoolTail.makePathObject(a)
-                    pool.removeClassPath(classPath)
+                    mPool.removeClassPath(classPath)
                 } catch (Exception e) {
-
+                    LogUtil.warn(e.getMessage());
                 }
             }
-            classPathList.clear()
         }
+        mClassPathList.clear()
+        mScanAdressClassSet.clear()
+        mPool.clearImportedPackages()
     }
-
-
 }

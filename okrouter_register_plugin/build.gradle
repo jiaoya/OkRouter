@@ -1,5 +1,6 @@
 apply plugin: 'groovy'
 apply plugin: 'maven'
+apply plugin: 'com.novoda.bintray-release'
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -16,15 +17,30 @@ repositories {
     mavenCentral()
 }
 
-//group = 'com.okrouter.plugin'
-//version = '1.0.0'
-
-//发布
+//测试发布本地
 uploadArchives {
     repositories.mavenDeployer {
         repository(url: uri('../repo')) //仓库的路径，此处是项目根目录下的 repo 的文件夹
-        pom.groupId = 'com.okrouter.plugin'  //groupId ，自行定义，一般是包名
+        pom.groupId = 'com.albert.okrouter'  //groupId ，自行定义，一般是包名
         pom.artifactId = 'register' //artifactId ，自行定义
         pom.version = '1.0.0' //version 版本号
     }
+}
+
+
+// 这里是读取Bintray相关的信息，我们上传项目到github上的时候会把gradle文件传上去，所以不要把帐号密码的信息直接写在这里，写在local.properties中，这里动态读取。
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+publish {
+    bintrayUser = properties.getProperty("bintray.user") // Bintray的用户名。
+    bintrayKey = properties.getProperty("bintray.apikey") // BintrayApiKey。
+    userOrg = 'albert-jiao' // 组织名
+    repoName = 'maven' // Binary上新建的仓库名（Repository）
+    dryRun = false
+    groupId = 'com.albert.plugin'
+    artifactId = 'okrouter-create'
+    publishVersion = '0.0.1'
+    desc = 'Android routing framework, support module decoupling, support multi-process, etc'
+    website = 'https://github.com/jiaoya/OkRouter'
 }

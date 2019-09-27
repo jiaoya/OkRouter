@@ -2,6 +2,7 @@ package com.okrouter.plugin
 
 import com.android.build.api.transform.*
 import com.android.build.gradle.internal.pipeline.TransformManager
+import javassist.ClassPool
 import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 
@@ -65,6 +66,12 @@ class JavassistTransform extends Transform {
         File file = new File(PluginSetting.CREATE_FILE_ROUTER_CALSS_PATHS)
         FileUtils.deleteDirectory(file)
 
+        ClassPool pool = new ClassPool();
+        // 没有用ClassPool.getDefault()，防止缓存，getDefault就不用添加appendSystemPath了
+        // 添加系统路径，不然无法引用系统相关的类，比如map
+        pool.appendSystemPath();
+        JavassistInject javassistInject = new JavassistInject(pool, mProject);
+
         // 最后一个输出的路径
         def lastDest = null
         inputs.each { TransformInput input ->
@@ -72,7 +79,7 @@ class JavassistTransform extends Transform {
             input.jarInputs.each { JarInput jarInput ->
                 //  LogUtil.error("jarInput name = " + jarInput.name + ", path = " + jarInput.file.absolutePath + "\n")
                 // 扫描过滤，自定义的逻辑
-                JavassistInject.scanFilterPath(jarInput.file.getAbsolutePath(), PluginSetting.MOLDE_PAHTS_CACHE_PACKAGE_NAME, mProject)
+                javassistInject.scanFilterPath(jarInput.file.getAbsolutePath(), PluginSetting.MOLDE_PAHTS_CACHE_PACKAGE_NAME);
 
                 // 重命名输出文件（同目录copyFile会冲突）
                 def jarName = jarInput.name
@@ -90,8 +97,8 @@ class JavassistTransform extends Transform {
             for (DirectoryInput directoryInput in input.directoryInputs) {
                 //   LogUtil.error("directoryInput name = " + directoryInput.name + ", path = " + directoryInput.file.absolutePath + "\n")
                 // 扫描过滤，自定义的逻辑
-                JavassistInject.scanFilterPath(directoryInput.file.absolutePath, PluginSetting.MOLDE_PAHTS_CACHE_PACKAGE_NAME, mProject)
-                
+                javassistInject.scanFilterPath(directoryInput.file.absolutePath, PluginSetting.MOLDE_PAHTS_CACHE_PACKAGE_NAME);
+
                 // 获取output目录
                 def dest = outputProvider.getContentLocation(directoryInput.name,
                         directoryInput.contentTypes, directoryInput.scopes,
@@ -102,7 +109,7 @@ class JavassistTransform extends Transform {
             }
         }
 
-        JavassistInject.injectCreate(lastDest)
+        javassistInject.injectCreate(lastDest)
         LogUtil.error("ransform-end")
     }
 

@@ -15,7 +15,7 @@ android {
 
         javaCompileOptions {
             annotationProcessorOptions {
-                arguments = ["JROUTER_MODULE_NAME": project.getName()]
+                arguments = ["OKROUTER_MODULE_NAME": project.getName()]
             }
         }
     }
@@ -37,5 +37,11 @@ dependencies {
     implementation rootProject.ext.appcompatv7
     implementation rootProject.ext.constraintlayout
     implementation project(path: ':okrouter')
+    implementation project(path: ':module_1')
     annotationProcessor project(path: ':okrouter_compiler')
+
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.3'
+    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.3'
+    // Optional, if you use support library fragments:
+    debugImplementation 'com.squareup.leakcanary:leakcanary-support-fragment:1.6.3'
 }

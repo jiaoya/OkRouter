@@ -1,2 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.albert.okrouter.module1" />
+    package="com.albert.okrouter.module1">
+
+    <application>
+        <activity
+            android:name=".WebViewProcessActivity"
+            android:launchMode="singleInstance"
+            android:process="com.albert.okrouter.module1"></activity>
+        <activity
+            android:name=".Model1TestActivity"
+            android:process="com.albert.okrouter.module1" />
+
+        <service
+            android:name=".Model1TestService"
+            android:process="com.albert.okrouter.module1" />
+    </application>
+
+</manifest>

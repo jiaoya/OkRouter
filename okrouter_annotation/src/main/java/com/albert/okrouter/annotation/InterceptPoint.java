@@ -23,11 +23,4 @@ public @interface InterceptPoint {
      * @return
      */
     String adress();
-
-    /**
-     * 是否是模糊匹配，如果检测到被拦截地址中包含adress，就会被拦截
-     *
-     * @return
-     */
-    boolean isFuzzyMatching() default false;
 }

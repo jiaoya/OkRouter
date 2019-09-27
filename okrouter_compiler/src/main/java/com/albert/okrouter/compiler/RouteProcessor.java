@@ -48,7 +48,7 @@ import javax.tools.Diagnostic;
 @SupportedSourceVersion(SourceVersion.RELEASE_8)//java版本支持
 //@SupportedAnnotationTypes({"com.albert.jrouter.annotion.Route"})//标注注解处理器支持的注解类型
 public class RouteProcessor extends AbstractProcessor {
-    private static String JROUTER_MODULE_NAME = "JROUTER_MODULE_NAME";
+    private static String JROUTER_MODULE_NAME = "OKROUTER_MODULE_NAME";
     private Filer mFiler;
     private Messager printMsg;
     /**
@@ -73,7 +73,7 @@ public class RouteProcessor extends AbstractProcessor {
                 //break;
             }
         }
-        printMsg.printMessage(Diagnostic.Kind.NOTE, "初识化--");
+        // printMsg.printMessage(Diagnostic.Kind.NOTE, "初识化--");
     }
 
     @Override
@@ -95,14 +95,14 @@ public class RouteProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> set, RoundEnvironment roundEnvironment) {
-        printLog("processing...S.size=" + set.size() + "--" + set.toString());
+        //printLog("processing...S.size=" + set.size() + "--" + set.toString());
         if (set.isEmpty()) {
             return false;
         }
 
         // 得到所有的Route注解
         Set<? extends Element> adressElements = roundEnvironment.getElementsAnnotatedWith(Route.class);
-        printLog("elements.size=" + adressElements.size());
+        printLog(classNameSuffix + "：elements.size=" + adressElements.size());
         if (adressElements.size() > 0) {
 
             for (Element tElement : adressElements) {
@@ -121,7 +121,7 @@ public class RouteProcessor extends AbstractProcessor {
                         throw new RuntimeException("the path（" + key + "）must be start with '/' and not more than 2 '/'! or url");
                     }
                 }
-                printLog("全名：" + fullClassName);
+                printLog("Route：" + fullClassName);
                 paths.add(key);
                 adressClassHashMap.put(key, fullClassName + ".class");
             }
@@ -134,7 +134,7 @@ public class RouteProcessor extends AbstractProcessor {
                 // 得到注解上的类名
                 TypeElement classElement = (TypeElement) tElement;
                 String fullClassName = classElement.getQualifiedName().toString();
-                printLog("interceptorElements-" + fullClassName);
+                // printLog("interceptorElements-" + fullClassName);
                 boolean isInterceptor = false;
                 for (TypeMirror typeMirror : classElement.getInterfaces()) {
                     if (typeMirror.toString().equals("com.albert.okrouter.interceptor.RouterInterceptor")) {
@@ -149,7 +149,7 @@ public class RouteProcessor extends AbstractProcessor {
                         throw new RuntimeException(String.format("More than one interceptors use same priority [%s]", priority));
                     }
                     interceptorsHashMap.put(priority, fullClassName + ".class");
-                    printLog("interceptorElements-" + interceptorsHashMap.toString());
+                    printLog("interceptor：" + fullClassName);
                 }
             }
         }
@@ -172,7 +172,7 @@ public class RouteProcessor extends AbstractProcessor {
                     InterceptPoint interceptPoint = tElement.getAnnotation(InterceptPoint.class);
                     String adress = interceptPoint.adress();
                     interceptorPointHashMap.put(adress, fullClassName + ".class");
-                    printLog("interceptorPointElements-" + interceptorPointHashMap.toString());
+                    printLog("interceptorPoint：" + fullClassName);
                 }
             }
         }
@@ -193,7 +193,7 @@ public class RouteProcessor extends AbstractProcessor {
                     Provider providerService = tElement.getAnnotation(Provider.class);
                     String processName = providerService.processName();
                     providerHashMap.put(processName, fullClassName + ".class");
-                    printLog("providerHashMap-" + providerHashMap.toString());
+                    printLog("Provider：" + fullClassName);
                 }
             }
         }
@@ -218,7 +218,7 @@ public class RouteProcessor extends AbstractProcessor {
                     String adress = action.adress();
                     String key = "okrouter://provider/action?processName=" + processName + "&adress=" + adress;
                     actionHashMap.put(key, fullClassName + ".class");
-                    printLog(" actionElements-" + actionHashMap.toString());
+                    printLog("Action：" + fullClassName);
                 }
             }
         }
@@ -278,7 +278,7 @@ public class RouteProcessor extends AbstractProcessor {
         }
         // 创建的类名
         final String className = "RouterModelClassPaths_" + classNameSuffix;
-        printLog(className);
+        // printLog(className);
         try {
             // 创建类名
             TypeSpec.Builder routerClassBuilder = TypeSpec.classBuilder(className)
@@ -431,11 +431,11 @@ public class RouteProcessor extends AbstractProcessor {
             TypeSpec typeSpec = routerClassBuilder.build();
             JavaFile file = JavaFile.builder(packageName, typeSpec).build();
             file.writeTo(mFiler);
-            printLog("------create");
+            // printLog("------create");
 
         } catch (Exception e) {
             e.printStackTrace();
-            printLog("------" + e.getLocalizedMessage());
+            // printLog("------" + e.getLocalizedMessage());
         }
     }
 

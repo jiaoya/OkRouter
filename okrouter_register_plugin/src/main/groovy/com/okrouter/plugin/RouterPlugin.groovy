@@ -16,7 +16,7 @@ public class RouterPlugin implements Plugin<Project> {
     @Override
     public void apply(Project project) {
         LogUtil.setProject(project)
-        LogUtil.info("=====================OkRouterPlugin Transform插件已注册 ======================")
+        LogUtil.error("=====================OkRouterPlugin Transform插件已注册 ======================")
         def classTransform = new JavassistTransform(project)
         project.android.registerTransform(classTransform)
 
