@@ -4,9 +4,10 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.SparseArray;
+
+import androidx.annotation.Nullable;
 
 import java.io.Serializable;
 import java.util.ArrayList;

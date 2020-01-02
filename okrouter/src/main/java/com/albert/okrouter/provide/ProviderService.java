@@ -5,7 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.Nullable;
 
 import com.albert.okrouter.core.OkRouter;
 import com.albert.okrouter.utils.ProcessUtil;

@@ -1,6 +1,6 @@
 package com.albert.okrouter.thread;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.albert.okrouter.utils.Rlog;
 

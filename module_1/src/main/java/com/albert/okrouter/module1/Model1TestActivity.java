@@ -1,9 +1,10 @@
 package com.albert.okrouter.module1;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.albert.okrouter.annotation.Route;
 import com.albert.okrouter.core.OkRouter;

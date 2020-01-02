@@ -3,7 +3,8 @@ package com.albert.okrouter;
 import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
-import android.support.annotation.Keep;
+
+import androidx.annotation.Keep;
 
 import com.albert.okrouter.core.OkRouter;
 import com.albert.okrouter.interceptor.RouterInterceptor;

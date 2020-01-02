@@ -17,6 +17,7 @@ buildscript {
         // in the individual module build.gradle files
         classpath 'com.novoda:bintray-release:0.9.1'
         classpath 'com.albert.plugin:okrouter-create:0.0.1'
+        //classpath 'com.okrouter.plugin:register:1.0.0'
     }
 }
 
@@ -53,16 +54,15 @@ task clean(type: Delete) {
 }
 
 ext {
-    compileSdkVersion = 28
-    buildToolsVersion = "28.0.3"
+    compileSdkVersion = 29
+    buildToolsVersion = "29.0.2"
     minSdkVersion = 19
-    targetSdkVersion = 28
-    versionCode = 1
+    targetSdkVersion = 29
+    versionCode = 3
     versionName = "1.0.0"
     routerVersion = "1.0.0"
 
-    appcompatv7 = 'com.android.support:appcompat-v7:28.0.0'
-    supportv4 = 'com.android.support:support-v4:28.0.0'
-    supportannotation = 'com.android.support:support-annotations:28.0.0'
-    constraintlayout = 'com.android.support.constraint:constraint-layout:1.1.3'
+    annotation = 'androidx.annotation:annotation:1.0.0'
+    appcompat = 'androidx.appcompat:appcompat:1.1.0'
+    constraintlayout = 'androidx.constraintlayout:constraintlayout:1.1.3'
 }

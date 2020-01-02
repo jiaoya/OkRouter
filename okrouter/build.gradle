@@ -31,7 +31,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation rootProject.ext.appcompatv7
+    implementation rootProject.ext.appcompat
     api 'com.albert.android:okrouter-annotation:0.0.1'
 }
 
@@ -69,12 +69,12 @@ properties.load(project.rootProject.file('local.properties').newDataInputStream(
 publish {
     bintrayUser = properties.getProperty("bintray.user") // Bintray的用户名。
     bintrayKey = properties.getProperty("bintray.apikey") // BintrayApiKey。
-    userOrg = 'albert-jiao' // 组织名
-    repoName = 'maven' // Binary上新建的仓库名（Repository）
+    userOrg = publish_userOrg // 组织名
+    repoName = publish_repoName // Binary上新建的仓库名（Repository）
     dryRun = false
     groupId = 'com.albert.android'
     artifactId = 'okrouter'
-    publishVersion = '0.0.1'
+    publishVersion = okrouter_main_version
     desc = 'Android routing framework, support module decoupling, support multi-process, etc'
     website = 'https://github.com/jiaoya/OkRouter'
 }

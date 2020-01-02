@@ -1,6 +1,6 @@
 package com.albert.okrouter.interceptor;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * <pre>

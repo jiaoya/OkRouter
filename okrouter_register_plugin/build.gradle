@@ -23,7 +23,7 @@ uploadArchives {
         repository(url: uri('../repo')) //仓库的路径，此处是项目根目录下的 repo 的文件夹
         pom.groupId = 'com.albert.okrouter'  //groupId ，自行定义，一般是包名
         pom.artifactId = 'register' //artifactId ，自行定义
-        pom.version = '1.0.0' //version 版本号
+        pom.version = okrouter_plugin_version //version 版本号
     }
 }
 
@@ -35,12 +35,12 @@ properties.load(project.rootProject.file('local.properties').newDataInputStream(
 publish {
     bintrayUser = properties.getProperty("bintray.user") // Bintray的用户名。
     bintrayKey = properties.getProperty("bintray.apikey") // BintrayApiKey。
-    userOrg = 'albert-jiao' // 组织名
-    repoName = 'maven' // Binary上新建的仓库名（Repository）
+    userOrg = publish_userOrg // 组织名
+    repoName = publish_repoName // Binary上新建的仓库名（Repository）
     dryRun = false
     groupId = 'com.albert.plugin'
     artifactId = 'okrouter-create'
-    publishVersion = '0.0.1'
+    publishVersion = okrouter_plugin_version
     desc = 'Android routing framework, support module decoupling, support multi-process, etc'
     website = 'https://github.com/jiaoya/OkRouter'
 }
