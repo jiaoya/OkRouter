@@ -2,6 +2,7 @@ package com.albert.okrouter.module1;
 
 
 import com.albert.okrouter.annotation.Interceptor;
+import com.albert.okrouter.core.OkRouter;
 import com.albert.okrouter.core.RouteEntity;
 import com.albert.okrouter.interceptor.InterceptorCallback;
 import com.albert.okrouter.interceptor.RouterInterceptor;
@@ -19,6 +20,10 @@ public class InterceptorTest implements RouterInterceptor {
     @Override
     public void intercept(RouteEntity routeEntity, InterceptorCallback callback) {
         routeEntity.putString("weight", "my weight = 70kg ");
-        callback.onContinue(routeEntity);
+        if (routeEntity.getAdress().equals("/NotActivityTest")) {
+            OkRouter.getInstance().build("/app/Main3Activity").navigation();
+        } else {
+            callback.onContinue(routeEntity);
+        }
     }
 }

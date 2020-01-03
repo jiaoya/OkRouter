@@ -42,6 +42,10 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation rootProject.ext.appcompat
     implementation rootProject.ext.constraintlayout
-    implementation project(path: ':okrouter')
-    annotationProcessor project(path: ':okrouter_compiler')
+
+    //implementation project(path: ':okrouter')
+    //annotationProcessor project(path: ':okrouter_compiler')
+
+    implementation 'com.albert.android:okrouter:1.0.1'
+    annotationProcessor 'com.albert.android:okrouter-compiler:1.0.2'
 }

@@ -6,7 +6,6 @@ import com.albert.okrouter.OkRouterConfig;
 import com.albert.okrouter.core.RouteEntity;
 import com.albert.okrouter.interceptor.InterceptorCallback;
 import com.albert.okrouter.interceptor.RouterInterceptor;
-import com.squareup.leakcanary.LeakCanary;
 
 /**
  * <pre>
@@ -22,12 +21,8 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        if (!LeakCanary.isInAnalyzerProcess(this)) {
-            LeakCanary.install(this);
-        }
-
         OkRouterConfig.getInstance()
-                .init(this, false)
+                .init(this, true)
                 .addInterceptor(new RouterInterceptor() {
                     @Override
                     public void intercept(RouteEntity routeEntity, InterceptorCallback callback) {

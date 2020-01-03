@@ -17,7 +17,7 @@ import com.albert.okrouter.module1.BaseWebView;
 /**
  * 主进程里WebView
  */
-@Route(adress = "/app/WebViewTestActivity")
+@Route(address = "/app/WebViewTestActivity")
 public class WebViewTestActivity extends AppCompatActivity {
 
     BaseWebView webView;

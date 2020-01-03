@@ -18,7 +18,7 @@ import com.albert.okrouter.annotation.Route;
 /**
  * 子进程webview
  */
-@Route(adress = "/app/WebViewProcessActivity")
+@Route(address = "/app/WebViewProcessActivity")
 public class WebViewProcessActivity extends AppCompatActivity {
 
     BaseWebView webView;

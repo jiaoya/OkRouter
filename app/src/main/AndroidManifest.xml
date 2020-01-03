@@ -23,6 +23,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ProcessTestActivity" />
+        <activity android:name=".NotActivityTest" />
     </application>
 
 </manifest>

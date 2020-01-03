@@ -13,8 +13,7 @@ import com.albert.okrouter.provide.ActionCallback;
 import com.albert.okrouter.provide.ActionResult;
 import com.albert.okrouter.thread.RouterScheduler;
 
-
-@Route(adress = "/ProcessTestActivity")
+@Route(address = "/ProcessTestActivity")
 public class ProcessTestActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = ProcessTestActivity.class.getSimpleName();

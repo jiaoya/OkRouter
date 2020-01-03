@@ -14,7 +14,7 @@ import com.albert.okrouter.interceptor.RouterInterceptor;
  *      Desc         : 拦截单个地址
  * </pre>
  */
-@InterceptPoint(adress = "/app/Main3Activity")
+@InterceptPoint(address = "/app/Main3Activity")
 public class InterceptorPointTest implements RouterInterceptor {
 
     @Override

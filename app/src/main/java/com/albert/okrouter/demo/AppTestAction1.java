@@ -15,7 +15,7 @@ import com.albert.okrouter.provide.IBaseAction;
  *      Desc         :
  * </pre>
  */
-@Action(adress = "AppTestAction1")
+@Action(address = "AppTestAction1")
 public class AppTestAction1 implements IBaseAction {
 
     @Override

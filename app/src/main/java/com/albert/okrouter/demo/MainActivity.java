@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.albert.okrouter.annotation.Route;
 import com.albert.okrouter.core.OkRouter;
 
-@Route(adress = "/MainActivity")
+@Route(address = "/MainActivity")
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();

@@ -32,7 +32,8 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation rootProject.ext.appcompat
-    api 'com.albert.android:okrouter-annotation:0.0.1'
+    api 'com.albert.android:okrouter-annotation:0.0.2'
+    // api project(path: ':okrouter_annotation')
 }
 
 if (project.hasProperty("android")) { // Android libraries

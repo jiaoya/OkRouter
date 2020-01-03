@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.albert.okrouter.annotation.Route;
 import com.albert.okrouter.core.OkRouter;
 
-@Route(adress = "router://module1/Model1TestActivity")
+@Route(address = "router://module1/Model1TestActivity")
 public class Model1TestActivity extends AppCompatActivity implements View.OnClickListener {
 
     @Override

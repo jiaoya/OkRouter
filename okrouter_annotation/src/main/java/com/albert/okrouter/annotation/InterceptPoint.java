@@ -22,5 +22,5 @@ public @interface InterceptPoint {
      *
      * @return
      */
-    String adress();
+    String address();
 }

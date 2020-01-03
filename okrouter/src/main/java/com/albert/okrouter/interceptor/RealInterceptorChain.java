@@ -2,6 +2,7 @@ package com.albert.okrouter.interceptor;
 
 import com.albert.okrouter.core.RouteEntity;
 import com.albert.okrouter.thread.CancelableCountDownLatch;
+import com.albert.okrouter.utils.Rlog;
 
 import java.util.List;
 
@@ -35,6 +36,7 @@ public class RealInterceptorChain implements RouterInterceptor.Chain {
     }
 
     private void proceed(final int index, final RouteEntity postcard) {
+        Rlog.e("RealInterceptorChain", index + "--" + interceptors.size() + "==" + counter.getCount());
         if (counter != null && index < interceptors.size()) {
             RouterInterceptor iInterceptor = interceptors.get(index);
             // 执行回调所有全局拦截器

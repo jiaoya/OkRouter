@@ -36,12 +36,13 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation rootProject.ext.appcompat
     implementation rootProject.ext.constraintlayout
-    implementation project(path: ':okrouter')
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.0'
     implementation project(path: ':module_1')
-    annotationProcessor project(path: ':okrouter_compiler')
 
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.3'
-    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.3'
-    // Optional, if you use support library fragments:
-    debugImplementation 'com.squareup.leakcanary:leakcanary-support-fragment:1.6.3'
+    //implementation project(path: ':okrouter')
+    // annotationProcessor project(path: ':okrouter_compiler')
+
+    implementation 'com.albert.android:okrouter:1.0.1'
+    annotationProcessor 'com.albert.android:okrouter-compiler:1.0.2'
+
 }

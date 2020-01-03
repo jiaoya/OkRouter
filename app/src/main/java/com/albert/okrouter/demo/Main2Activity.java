@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.albert.okrouter.annotation.Route;
 import com.albert.okrouter.core.OkRouter;
 
-@Route(adress = "/Main2Activity")
+@Route(address = "/Main2Activity")
 public class Main2Activity extends AppCompatActivity implements View.OnClickListener {
 
     @Override
@@ -27,6 +27,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         findViewById(R.id.btn2Click5).setOnClickListener(this);
         findViewById(R.id.btn2Click6).setOnClickListener(this);
         findViewById(R.id.btn2Click7).setOnClickListener(this);
+        findViewById(R.id.btn2Click8).setOnClickListener(this);
     }
 
 
@@ -51,10 +52,13 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
                 break;
             case R.id.btn2Click6:
-                OkRouter.getInstance().build("/WebViewTestActivity").putString("1","2").navigation();
+                OkRouter.getInstance().build("/WebViewTestActivity").putString("1", "2").navigation();
                 break;
             case R.id.btn2Click7:
                 OkRouter.getInstance().build("/app/WebViewProcessActivity").navigation();
+                break;
+            case R.id.btn2Click8:
+                OkRouter.getInstance().build("/NotActivityTest").navigation();
                 break;
         }
     }

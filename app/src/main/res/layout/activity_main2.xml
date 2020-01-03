@@ -66,6 +66,14 @@
         android:layout_marginTop="10dp"
         android:text="跳转子进程webview" />
 
+    <Button
+        android:id="@+id/btn2Click8"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="10dp"
+        android:text="拦截器测试" />
+
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="match_parent"

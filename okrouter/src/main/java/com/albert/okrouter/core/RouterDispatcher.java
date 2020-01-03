@@ -115,17 +115,19 @@ public class RouterDispatcher implements RouterInterceptor {
             public void run() {
                 CancelableCountDownLatch interceptorCounter = new CancelableCountDownLatch(Router.mInterceptors.size());
                 try {
+                    Rlog.e("Router_execute", System.currentTimeMillis() + "");
                     RealInterceptorChain chain = new RealInterceptorChain(interceptorCounter, Router.mInterceptors);
                     chain.proceed(routeEntity);
-                    //如果在指定的时间内达到interceptors.size()的数量，则程序继续向下运行，否则如果出现超时，则抛出TimeoutException/OkRouterException异常
-                    interceptorCounter.await(1000, TimeUnit.MILLISECONDS);// 100毫秒内没有处理完，就超时了
+                    // 如果在指定的时间内达到interceptors.size()的数量，则程序继续向下运行，否则如果出现超时，则抛出TimeoutException/OkRouterException异常
+                    // 如果你们拦截器没有回调callback，也会超时。请及时回调callback，有肯能造成死循环
+                    interceptorCounter.await(routeEntity.getOutTime(), TimeUnit.MILLISECONDS);// 1000毫秒内没有处理完，就超时了
+                    Rlog.e("Router_execute", System.currentTimeMillis() + "");
                     if (interceptorCounter.getCount() > 0) {    // Cancel the navigation this time, if it hasn't return anythings.
                         callback.onInterrupt(new OkRouterException("The interceptor processing timed out. or interceptor not call InterceptorCallback."));
                     } else {
                         callback.onContinue(routeEntity);
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
                     callback.onInterrupt(e);
                 }
             }

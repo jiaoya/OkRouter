@@ -7,7 +7,8 @@ dependencies {
     implementation 'com.google.auto.service:auto-service:1.0-rc4'
     implementation 'com.squareup:javapoet:1.11.1'
     implementation rootProject.ext.appcompat
-    implementation 'com.albert.android:okrouter-annotation:0.0.1'
+    implementation 'com.albert.android:okrouter-annotation:0.0.2'
+    // implementation project(path: ':okrouter_annotation')
 }
 
 sourceCompatibility = "8"

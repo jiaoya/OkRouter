@@ -112,7 +112,7 @@ public class RouteProcessor extends AbstractProcessor {
                 String fullClassName = classElement.getQualifiedName().toString();
                 // 获取Annotation,然后获取方法的值
                 Route routeAnnotation = tElement.getAnnotation(Route.class);
-                String key = routeAnnotation.adress();
+                String key = routeAnnotation.address();
 
                 // 检查路径头
                 URI uri = URI.create(key);
@@ -170,7 +170,7 @@ public class RouteProcessor extends AbstractProcessor {
                 }
                 if (isInterceptor) {
                     InterceptPoint interceptPoint = tElement.getAnnotation(InterceptPoint.class);
-                    String adress = interceptPoint.adress();
+                    String adress = interceptPoint.address();
                     interceptorPointHashMap.put(adress, fullClassName + ".class");
                     printLog("interceptorPoint：" + fullClassName);
                 }
@@ -215,7 +215,7 @@ public class RouteProcessor extends AbstractProcessor {
                 if (isAction) {
                     Action action = tElement.getAnnotation(Action.class);
                     String processName = action.processName();
-                    String adress = action.adress();
+                    String adress = action.address();
                     String key = "okrouter://provider/action?processName=" + processName + "&adress=" + adress;
                     actionHashMap.put(key, fullClassName + ".class");
                     printLog("Action：" + fullClassName);

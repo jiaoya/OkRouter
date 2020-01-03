@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.albert.okrouter.annotation.Route;
 
-@Route(adress = "/app/Main3Activity")
+@Route(address = "/app/Main3Activity")
 public class Main3Activity extends AppCompatActivity {
 
     TextView tvShow;

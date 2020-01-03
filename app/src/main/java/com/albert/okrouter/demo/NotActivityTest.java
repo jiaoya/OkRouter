@@ -1,5 +1,10 @@
 package com.albert.okrouter.demo;
 
+import android.os.Bundle;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.albert.okrouter.annotation.Route;
 
 /**
@@ -10,7 +15,12 @@ import com.albert.okrouter.annotation.Route;
  *      Desc         :
  * </pre>
  */
-@Route(adress = "/NotActivityTest")
-public class NotActivityTest {
+@Route(address = "/NotActivityTest")
+public class NotActivityTest extends AppCompatActivity {
 
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main3);
+    }
 }

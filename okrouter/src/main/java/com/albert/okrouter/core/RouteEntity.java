@@ -9,6 +9,8 @@ import android.util.SparseArray;
 
 import androidx.annotation.Nullable;
 
+import com.albert.okrouter.callback.NavCallback;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -22,38 +24,38 @@ import java.util.ArrayList;
  */
 public class RouteEntity {
 
-    private String adress;         // 地址/路径
+    private String address;         // 地址/路径
     private Uri uri;
     private Class<?> destination;  // Destination 类
     private Bundle mExtras;        // Data to startActivity
     private int flags = -1;        // startActivity Flags
-
+    private long outTime = 500;       // 跳转处理超时时间
     private Bundle options;        // The transition animation of activity
     private int enterAnim = -1;    // 进入动画
     private int exitAnim = -1;     // 关闭动画
 
 
-    public RouteEntity(String adress) {
-        this(adress, null, null);
+    public RouteEntity(String address) {
+        this(address, null, null);
     }
 
     public RouteEntity(Uri uri) {
         this(null, uri, null);
     }
 
-    public RouteEntity(String adress, Uri uri) {
-        this(adress, uri, null);
+    public RouteEntity(String address, Uri uri) {
+        this(address, uri, null);
     }
 
-    private RouteEntity(String adress, Uri uri, Bundle bundle) {
-        setAdress(adress);
+    private RouteEntity(String address, Uri uri, Bundle bundle) {
+        setAdress(address);
         setUri(uri);
         this.mExtras = (null == bundle ? new Bundle() : bundle);
     }
 
-    private RouteEntity setAdress(String adress) {
-        if (!TextUtils.isEmpty(adress)) {
-            this.adress = adress;
+    public RouteEntity setAdress(String address) {
+        if (!TextUtils.isEmpty(address)) {
+            this.address = address;
         }
         return this;
     }
@@ -71,7 +73,10 @@ public class RouteEntity {
     }
 
     public RouteEntity putExtras(Bundle bundle) {
-        this.mExtras = bundle;
+        if (mExtras == null) {
+            mExtras = new Bundle();
+        }
+        mExtras.putAll(bundle);
         return this;
     }
 
@@ -418,9 +423,12 @@ public class RouteEntity {
         return this;
     }
 
+    public void setOutTime(long outTime) {
+        this.outTime = outTime;
+    }
 
     public String getAdress() {
-        return adress;
+        return address;
     }
 
     public Uri getUri() {
@@ -451,17 +459,32 @@ public class RouteEntity {
         return exitAnim;
     }
 
+    public long getOutTime() {
+        return outTime;
+    }
 
     public Object navigation() {
-        return navigation(null, -1);
+        return navigation(null, -1, null);
     }
 
     public Object navigation(Context currentContext) {
-        return navigation(currentContext, -1);
+        return navigation(currentContext, -1, null);
     }
 
     public Object navigation(Context currentContext, int requestCode) {
-        return Router.getInstance().navigation(this, currentContext, requestCode);
+        return navigation(currentContext, -1, null);
+    }
+
+    public Object navigation(NavCallback callback) {
+        return navigation(null, -1, callback);
+    }
+
+    public Object navigation(Context currentContext, NavCallback callback) {
+        return navigation(currentContext, -1, callback);
+    }
+
+    public Object navigation(Context currentContext, int requestCode, NavCallback callback) {
+        return Router.getInstance().navigation(this, currentContext, requestCode, callback);
     }
 
 }

@@ -28,5 +28,5 @@ public @interface Action {
      *
      * @return
      */
-    String adress();
+    String address();
 }

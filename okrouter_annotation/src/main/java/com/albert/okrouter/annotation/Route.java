@@ -22,6 +22,6 @@ public @interface Route {
      *
      * @return
      */
-    String adress();
+    String address();
 
 }

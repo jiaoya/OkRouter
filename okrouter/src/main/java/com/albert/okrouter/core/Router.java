@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.albert.okrouter.RouterConstant;
+import com.albert.okrouter.callback.RouteCallback;
 import com.albert.okrouter.exception.OkRouterException;
 import com.albert.okrouter.interceptor.InterceptorCallback;
 import com.albert.okrouter.interceptor.RouterInterceptor;
@@ -229,22 +230,29 @@ class Router {
      * @param requestCode
      * @return
      */
-    public Object navigation(final RouteEntity routeEntity, final Context currentContext, final int requestCode) {
+    public Object navigation(final RouteEntity routeEntity, final Context currentContext, final int requestCode, final RouteCallback callback) {
         // 拦截
         dispatcher.intercept(routeEntity, new InterceptorCallback() {
             @Override
             public void onContinue(RouteEntity routeEntity) {
                 if (routeEntity == null) {
-                    throw new OkRouterException(TAG + " Interceptor get RouteEntity is null");
+                    if (null != callback) {
+                        callback.onInterrupt(new OkRouterException(TAG + " Interceptor get RouteEntity is null"));
+                    } else {
+                        throw new OkRouterException(TAG + " Interceptor get RouteEntity is null");
+                    }
                 } else {
-                    navigationInterceptorPint(routeEntity, currentContext, requestCode);
+                    navigationInterceptorPint(routeEntity, currentContext, requestCode, callback);
                 }
             }
 
             @Override
             public void onInterrupt(Throwable exception) {
                 Rlog.e(TAG, exception.toString());
-                navigationInterceptorPint(routeEntity, currentContext, requestCode);
+                if (null != callback) {
+                    callback.onInterrupt(new OkRouterException(exception));
+                }
+                // navigationInterceptorPint(routeEntity, currentContext, requestCode);
             }
         });
         return null;
@@ -258,7 +266,7 @@ class Router {
      * @param requestCode
      * @return
      */
-    public Object navigationInterceptorPint(final RouteEntity routeEntity, final Context currentContext, final int requestCode) {
+    public Object navigationInterceptorPint(final RouteEntity routeEntity, final Context currentContext, final int requestCode, final RouteCallback callback) {
 
         if (mInterceptorPoints != null
                 && mInterceptorPoints.size() > 0
@@ -269,24 +277,34 @@ class Router {
                     @Override
                     public void onContinue(RouteEntity routeEntity) {
                         if (routeEntity == null) {
-                            throw new OkRouterException(TAG + " Interceptor get RouteEntity is null");
+                            if (null != callback) {
+                                callback.onInterrupt(new OkRouterException(TAG + " Interceptor get RouteEntity is null"));
+                            } else {
+                                throw new OkRouterException(TAG + " Interceptor get RouteEntity is null");
+                            }
                         } else {
-                            navigationDestinationClass(currentContext, routeEntity, requestCode);
+                            navigationDestinationClass(currentContext, routeEntity, requestCode, callback);
                         }
                     }
 
                     @Override
                     public void onInterrupt(Throwable exception) {
                         Rlog.e(TAG, exception.toString());
-                        navigationDestinationClass(currentContext, routeEntity, requestCode);
+                        if (null != callback) {
+                            callback.onInterrupt(new OkRouterException(exception));
+                        }
+                        // navigationDestinationClass(currentContext, routeEntity, requestCode);
                     }
                 });
             } catch (Exception e) {
                 e.printStackTrace();
-                navigationDestinationClass(currentContext, routeEntity, requestCode);
+                if (null != callback) {
+                    callback.onInterrupt(new OkRouterException(e));
+                }
+                // navigationDestinationClass(currentContext, routeEntity, requestCode);
             }
         } else {
-            navigationDestinationClass(currentContext, routeEntity, requestCode);
+            navigationDestinationClass(currentContext, routeEntity, requestCode, callback);
         }
         return null;
     }
@@ -297,7 +315,7 @@ class Router {
      * @param routeEntity
      * @return
      */
-    private Object navigationDestinationClass(final Context currentContext, final RouteEntity routeEntity, final int requestCode) {
+    private Object navigationDestinationClass(final Context currentContext, final RouteEntity routeEntity, final int requestCode, final RouteCallback callback) {
 
         // 获取类
         setDestination(routeEntity);
@@ -310,15 +328,19 @@ class Router {
         // 判断目标类的类型
         if (Activity.class.isAssignableFrom(routeEntity.getDestination())) {
             // 如果是Activity
-            return navigationActivity(currentContext, routeEntity, requestCode);
+            return navigationActivity(currentContext, routeEntity, requestCode, callback);
         } else if (Fragment.class.isAssignableFrom(routeEntity.getDestination())
                 || android.app.Fragment.class.isAssignableFrom(routeEntity.getDestination())) {
             // 如果是Fragment
-            return navigationFragmegt(routeEntity);
+            return navigationFragmegt(routeEntity, callback);
         } else {
-            throw new OkRouterException(TAG + "  destination class is not Activity or Fragment");
+            if (null != callback) {
+                callback.onInterrupt(new OkRouterException(TAG + "  destination class is not Activity or Fragment"));
+            } else {
+                throw new OkRouterException(TAG + "  destination class is not Activity or Fragment");
+            }
         }
-        // return null;
+        return null;
     }
 
     /**
@@ -329,7 +351,7 @@ class Router {
      * @param requestCode
      * @return
      */
-    private Object navigationActivity(final Context context, final RouteEntity routeEntity, final int requestCode) {
+    private Object navigationActivity(final Context context, final RouteEntity routeEntity, final int requestCode, final RouteCallback callback) {
         final Context currentContext;
         if (context == null) {
             if (mCurrentActivity == null) {
@@ -358,6 +380,9 @@ class Router {
                 startActivity(currentContext, intent, routeEntity, requestCode);
             }
         });
+        if (null != callback) {
+            callback.onArrival(routeEntity);
+        }
         return null;
     }
 
@@ -421,7 +446,7 @@ class Router {
      * @param routeEntity
      * @return
      */
-    private Object navigationFragmegt(final RouteEntity routeEntity) {
+    private Object navigationFragmegt(final RouteEntity routeEntity, final RouteCallback callback) {
         Class fragmentMeta = routeEntity.getDestination();
         try {
             Object instance = fragmentMeta.getConstructor().newInstance();
@@ -433,6 +458,9 @@ class Router {
             return instance;
         } catch (Exception ex) {
             Rlog.e(TAG, "Fetch fragment instance error, " + ex.getLocalizedMessage());
+            if (null != callback) {
+                callback.onInterrupt(new OkRouterException(ex));
+            }
             return null;
         }
     }
@@ -512,7 +540,11 @@ class Router {
         } else if (!ProcessUtil.isMainProcess()) {
             // 子进程内
             if (TextUtils.isEmpty(actionEntity.getProcessName())) {
-                throw new OkRouterException("Child process, must write other process name");
+                if (null != callback) {
+                    callback.error(new OkRouterException("Child process, must write other process name"));
+                } else {
+                    throw new OkRouterException("Child process, must write other process name");
+                }
             }
             if (actionEntity.getProcessName().equals(ProcessUtil.getCurrentProcessName())) {
                 // 填写的进程名和当前进程相同，也不进行binder通讯
@@ -539,7 +571,9 @@ class Router {
             ActionResult result = iBaseAction.invoke(actionEntity.getContext(), actionEntity.getData());
             actionCallbackDeal(actionEntity, result, callback);
         } catch (Exception e) {
-            callback.error(e);
+            if (null != callback) {
+                callback.error(e);
+            }
         }
     }
 
@@ -552,7 +586,9 @@ class Router {
     private void connectProcess(final ActionEntity actionEntity, final ActionCallback callback) {
 
         if (!mServices.containsKey(actionEntity.getProcessName())) {
-            callback.error(new OkRouterException("Could not find processName,please check the processName of the settings"));
+            if (null != callback) {
+                callback.error(new OkRouterException("Could not find processName,please check the processName of the settings"));
+            }
             return;
         }
         Intent intent = new Intent(mApplicationContext, mServices.get(actionEntity.getProcessName()));
@@ -572,7 +608,9 @@ class Router {
                     ActionResult result = iBinder.getAction(actionEntity.getActionUri().toString(), actionEntity.getData());
                     actionCallbackDeal(actionEntity, result, callback);
                 } catch (Exception e) {
-                    callback.error(e);
+                    if (null != callback) {
+                        callback.error(e);
+                    }
                 }
             }
 
@@ -592,7 +630,9 @@ class Router {
         if (isConnect) {
             mServiceConnections.put(actionEntity.getProcessName(), connection);
         } else {
-            callback.error(new OkRouterException("bindService process is failed"));
+            if (null != callback) {
+                callback.error(new OkRouterException("bindService process is failed"));
+            }
         }
     }
 
@@ -610,24 +650,35 @@ class Router {
                     runInMainThread(new Runnable() {
                         @Override
                         public void run() {
-                            callback.result(result);
+                            if (null != callback) {
+                                callback.result(result);
+                            }
+
                         }
                     });
                 } else {
-                    callback.result(result);
+                    if (null != callback) {
+                        callback.result(result);
+                    }
                 }
             } else if (actionEntity.getScheduler() == RouterScheduler.MAIN) {
                 runInMainThread(new Runnable() {
                     @Override
                     public void run() {
-                        callback.result(result);
+                        if (null != callback) {
+                            callback.result(result);
+                        }
                     }
                 });
             } else {
-                callback.result(result);
+                if (null != callback) {
+                    callback.result(result);
+                }
             }
         } catch (Exception e) {
-            callback.error(e);
+            if (null != callback) {
+                callback.error(e);
+            }
         }
     }
 
